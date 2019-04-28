@@ -1,0 +1,112 @@
+swagger: "2.0"
+info:
+  description: Description for the DevSpec Engine endpoints for DevSpec v1.0.0
+  version: "1.0.0"
+  title: DevSpec Core Engine API Description
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /v1
+
+# Paths supported by the server application
+paths:
+  /analysis:
+    get:
+      operationId: main.analyze
+      tags:
+        - Analyze
+      summary: Conduct the analysis and return the user the topic coherence details for each topic
+      description: Returns topic coherence details
+      parameters:
+        - name: game
+          in: query
+          type: string
+          description: The name of the subreddit that needs to be analyzed
+        - name: start
+          in: query
+          type: integer
+          description: The name start time to analyze discussions
+        - name: end
+          in: query
+          type: integer
+          description: The name end time to analyze discussions
+        - name: topics
+          in: query
+          type: integer
+          description: The number of topics defined by user
+        - name: keywords
+          in: query
+          type: string
+          description: topic and keyword pairs
+      responses:
+        200:
+          description: Successful completed the analysis
+          schema:
+            type: string
+            
+                  
+    
+  /subreddits:
+    get:
+      operationId: main.list
+      tags:
+        - Subreddits
+      summary: This will search the GCP bucket to retrive all files and will list all the folders Note- all subreddits have a unique name hence no ID is required
+      description: Returns a list of subreddits that are included in the system
+      responses:
+        200:
+          description: Successfully retrived the list of subreddits
+          schema:
+            type: array
+            items:
+              properties:
+                name:
+                  type: string
+                  description: the name of the subreddit
+
+  /categories:
+    get:
+      operationId: main.categories
+      tags:
+        - Analyze
+      summary: return the categories defined by the user and the discussions that belong to those categories. the categories will be further devided into 5 sub categories according to user intention
+      description: Return categories
+      responses:
+        200:
+          description: Successful  retrived the list of categories
+          schema:
+            type: array
+            items:
+              properties:
+                name:
+                  type: string
+                  description: the name of the category
+                ids:
+                  type: array
+                  description: the ids for each category
+
+  /summaries:
+    get:
+      operationId: main.summaries
+      tags:
+        - Analyze
+      summary: return the summary for each sub category
+      description: Return summaries
+      responses:
+        200:
+          description: Successful  retrived the list of summaries
+          schema:
+            type: array
+            items:
+              properties:
+                name:
+                  type: string
+                  description: the name of the category
+                subname:
+                  type: string
+                  description: the name of the subcategory
+                sumary:
+                  type: string
+                  description: the summary for each item
