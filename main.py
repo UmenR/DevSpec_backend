@@ -18,8 +18,8 @@ def getFeedback():
     #Change later hardcode for now
     ldadata = retriveTMdata(1509494400,1539302400)
 
-     globals()['word2vecdata'] = w2wdata
-     globals()['corexdata'] = ldadata
+    globals()['word2vecdata'] = w2wdata
+    globals()['corexdata'] = ldadata
 
 
 def traininter():
