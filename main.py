@@ -39,3 +39,14 @@ def analyze():
     print('2 ok')
     return "inanalyze"
 
+
+def list():
+    return "inlist"
+
+def categories():
+    return "incategories"
+
+
+def summaries():
+    return "insummaries"
+
