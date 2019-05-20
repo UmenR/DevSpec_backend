@@ -11,18 +11,19 @@ default_anchors = [
             ['server','desync','lag','network','ping']
             ]
     
-topics = 0
+topics = 7
 doc_topic_mat = None
 anchors = None
 
 def trainCorex(words,matrix,topics,anchors=default_anchors):
-    topic_model = ct.Corex(n_hidden=7, seed=2)
+    topic_model = ct.Corex(n_hidden=globals()['topics'], seed=2)
     topic_model.fit(doc_word, words=words, docs=items['keys'], anchors=anchors, anchor_strength=8)
     topics = topic_model.get_topics()
-    globals()['topics'] = topics
+    #globals()['topics'] = topics
     globals()['anchors'] = anchors
     globals()['doc_topic_mat'] = topic_model.labels
     print(topic_model.tc)
+    return globals()['doc_topic_mat']
 
 def printTopWords():
     for n in range(globals()['topics']):
