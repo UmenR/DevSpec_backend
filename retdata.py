@@ -21,12 +21,12 @@ def retriveword2vecdata():
 def retriveTMdata(start,end):
     oneDay = 86400
     startTime = start + 1
-    data = []
-    plainText = []
-    keys = []
-    classifications = []
-    dicts=[]
-    count = 0
+    #data = []
+    #plainText = []
+    #keys = []
+    #classifications = []
+    #dicts=[]
+    #count = 0
     while(startTime < end):
         try:
             #Todo Replace with bucket storage
@@ -54,4 +54,4 @@ def retriveTMdata(start,end):
         except:
             startTime += oneDay
             
-    return {'keys':keys,'docs':plainText,'count':count,'classify':classifications,'dicts':dicts}
+    return {'keys':keys,'docs':plainText,'classify':classifications,'dicts':dicts}

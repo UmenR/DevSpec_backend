@@ -19,7 +19,7 @@ def getFeedback():
     ldadata = retdata.retriveTMdata(1509494400,1539302400)
     print('lda data')
     print(ldadata)
-    globals()['word2vecdata'] = w2wdata
+    #globals()['word2vecdata'] = w2wdata
     globals()['corexdata'] = ldadata
 
 
