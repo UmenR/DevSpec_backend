@@ -1,5 +1,6 @@
 import os
 import json
+import helpers
 
 def retriveword2vecdata():
     sentences = []
@@ -42,7 +43,7 @@ def retriveTMdata(start,end):
                 else:
                     concatString = document['title'] +  ' . ' + document['selftext'] + ' . ' + document['gencomments']
                     uncleaned = concatString
-                    concatString = clean(concatString)
+                    concatString = helpers.clean(concatString)
                     plainText.append(str.lower(concatString))
                     keys.append(document['id'])
                     classifications.append(document['classifierresults'])

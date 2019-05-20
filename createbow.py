@@ -3,7 +3,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 def createBBOW(docs):
     vectorizer = CountVectorizer(stop_words='english', max_features=20000, binary=True)
-    doc_word = vectorizer.fit_transform(items['docs'])
+    doc_word = vectorizer.fit_transform(docs)
     doc_word = ss.csr_matrix(doc_word)
     doc_word.shape
     words = list(np.asarray(vectorizer.get_feature_names()))

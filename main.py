@@ -14,18 +14,19 @@ corex = None
 #This method will get the data from storage and store it in variables
 def getFeedback():
     print('1 ok')
-    w2wdata = retdata.retriveword2vecdata()
+    #w2wdata = retdata.retriveword2vecdata()
     #Change later hardcode for now
-    ldadata = retriveTMdata(1509494400,1539302400)
-
+    ldadata = retdata.retriveTMdata(1509494400,1539302400)
+    print('lda data')
+    print(ldadata)
     globals()['word2vecdata'] = w2wdata
     globals()['corexdata'] = ldadata
 
 
 def traininter():
-    globals()['w2w'] = word2vec.trainWord2Vec(word2vecdata,300)
-    print('W2W has been trained')
-    globals()['corexbow'] = createbow.createBBOW(corexdata['docs'])
+    #globals()['w2w'] = word2vec.trainWord2Vec(word2vecdata,300)
+    #print('W2W has been trained')
+    globals()['corexbow'] = createbow.createBBOW(globals()['corexdata']['docs'])
     print('BBOW has been trained')
 
 
@@ -37,6 +38,7 @@ def traincorex():
 def analyze():
     getFeedback()
     print('2 ok')
+    traininter()
     return "inanalyze"
 
 
