@@ -1,4 +1,7 @@
+import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
+import scipy.sparse as ss
+
 
 
 def createBBOW(docs):

@@ -2,7 +2,6 @@ import json
 import os
 import requests
 import gensim
-import numpy as np
 import re
 import string
 import scipy.sparse as ss
