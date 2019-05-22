@@ -145,12 +145,12 @@ def removeBelowMedian(subdiscussions,topic,topic_model,w2vModel):
 #4 The following method will get discussions for a certain topic under a sub category such as bug etc.
 # subdiscussions = 3 , topic = any topic from the topic list , sentnum = user input
 #most simillar after clustering approach
-def getClusterSim(subdiscussions,topic,sentnum):
+def getClusterSim(subdiscussions,topic,sentnum,topic_model,w2wmodel):
     if len(subdiscussions) / 2  >= sentnum * 2:
-        median_removed_list = remove_below_median(subdiscussions,topic)
+        median_removed_list = removeBelowMedian(subdiscussions,topic,topic_model,w2wmodel)
         if len(median_removed_list) > sentnum:
-            clusterlist = get_clusters(median_removed_list)
-            finallist = choose_discussions(clusterlist,sentnum)
+            clusterlist = getClusters(median_removed_list)
+            finallist = chooseDiscussions(clusterlist,sentnum)
             return finallist
         else:
             median_removed_list.sort(key=lambda item:item['sim'], reverse=True)
@@ -158,8 +158,8 @@ def getClusterSim(subdiscussions,topic,sentnum):
     elif len(subdiscussions) == sentnum:
         return subdiscussions
     else:
-        clusterlist = get_clusters(subdiscussions)
-        finallist = choose_discussions(clusterlist,sentnum)
+        clusterlist = getClusters(subdiscussions)
+        finallist = chooseDiscussions(clusterlist,sentnum)
         return finallist
         
 #chosendiscussions = get_cluster_sim(testing,0,20)

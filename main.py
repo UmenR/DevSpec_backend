@@ -130,7 +130,7 @@ def results():
         chosen_sub_discussion_list = dict()
         for sub_topic,sub_topic_items in each_topic_item.items():
             chosen_discussions = []
-            chosen_discussions = classifier.getClusterSim(sub_topic_items,key,2)
+            chosen_discussions = classifier.getClusterSim(sub_topic_items,key,2,globals()['corexModel'],globals()['w2w'])
             chosen_sub_discussion_list[sub_topic]=chosen_discussions
         chosen_discussion_list[key]=chosen_sub_discussion_list
     all_summaries = dict()
