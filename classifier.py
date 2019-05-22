@@ -342,7 +342,7 @@ def create_title_summaries(selected,dicts,topic,topic_model,w2wmodel):
                     
                     titlesum = fintitlesent + '.' + titlesum
                     summarizedcomments = get_comment_summary(comments=item['comments'],title=item['title']+'.'+
-                                                             item['selftext'],topic_vector=topic_sent_vec,w2wmodel)
+                                                             item['selftext'],topic_vector=topic_sent_vec,w2wmodel=w2wmodel)
                     summary.append({'header':titlesum,'content':summarizedcomments,'key':item['key']})
                     
                 else:
@@ -366,7 +366,7 @@ def create_title_summaries(selected,dicts,topic,topic_model,w2wmodel):
                     for sent in scoredsentences:
                         titlesum = titlesum + " . " + sent['sentence']
                     
-                    summarizedcomments = get_comment_summary(comments=item['comments'],title=item['title']+'.'+item['selftext'],topic_vector=topic_sent_vec,w2wmodel)
+                    summarizedcomments = get_comment_summary(comments=item['comments'],title=item['title']+'.'+item['selftext'],topic_vector=topic_sent_vec,w2wmodel=w2wmodel)
                     summary.append({'header':titlesum,'content':summarizedcomments,'key':item['key']})
                     
     return summary
