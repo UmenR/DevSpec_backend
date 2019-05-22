@@ -2,45 +2,104 @@ import retdata
 import word2vec
 import createbow
 import trainTM
+import classifier
+import helpers
+import gensim
 
 
-
+isTrainedW2w = False
+corexData = None
+corexModel = None
+numberOfTopics = 0
 word2vecdata = None
-corexdata = None
-corexbow = None
 w2w = None
-corex = None
+subreddit = None
+startTime = 0
+endTime = 0
 
-#This method will get the data from storage and store it in variables
-def getFeedback():
-    print('1 ok')
-    #w2wdata = retdata.retriveword2vecdata()
-    #Change later hardcode for now
+'''Select the subreddit for analysis,
+If a subreddit is already existing and has a W2W model trained then we do not need to retrain the W2W Model
+'''
+def w2wmodel(game):
+    #if game == globals()['subreddit'] and globals()['isTrainedW2w'] == True:
+        #return "True"
+    #elif game == globals()['subreddit']:
+        #w2wdata = retdata.retriveword2vecdata()
+        #globals()['word2vecdata'] = w2wdata
+        #globals()['w2w'] = word2vec.trainWord2Vec(word2vecdata,300)
+        #globals()['isTrainedW2w'] = True
+        #return "True"
+    #else:
+        #globals()['subreddit'] = game
+        #For now the users input to this method is disregarded as we will only analyze feedback based on PUBATTLEGROUNDS
+        #w2wdata = retdata.retriveword2vecdata()
+        #globals()['word2vecdata'] = w2wdata
+        #globals()['w2w'] = word2vec.trainWord2Vec(word2vecdata,300)
+        #globals()['isTrainedW2w'] = True
+        #return "True"
+    model = gensim.models.Word2Vec.load_word2vec_format('./GoogleNews-vectors-negative300.bin', binary=True,limit=100000)
+    globals()['w2w']= model
+    return "True"
+        
+'''Input query parameters , End, Topics, Keywords
+@start - Integer : Start time to consider discussions withing range
+@end - Integer : End time to disregard discussions
+@topics - Integer : Number of topics defined by the user
+@keywords - String : Topic key word pairs as string
+
+Returns: topic coherence score graph, keywords per each topic
+'''
+def analyze(start,end,topics,keywords):
+    globals()['numberOfTopics'] = topics
+    globals()['startTime'] = start
+    globals()['endTime'] = end
+    #Note that this is not the start and endtime this is all the data we have scraped
     ldadata = retdata.retriveTMdata(1509494400,1539302400)
-    #print('lda data')
-    #print(ldadata)
-    #globals()['word2vecdata'] = w2wdata
-    globals()['corexdata'] = ldadata
+    globals()['corexData'] = ldadata
+    bowmodel = createbow.createBBOW(ldadata['docs'])
+    #We will be going with the default valudes disregarding user inputs
+    topic_model=trainTM.trainCorex(bowmodel['bow_mat'],bowmodel['bow_words'],ldadata['keys'])
+    globals()['corexModel'] = topic_model
+
+    #return the topic cohession scores we will go with the default 20 top words example in this case.
+    results = helpers.get_topic_cohission(topics,globals()['w2w'],topic_model)
+
+    return results
 
 
-def traininter():
-    #globals()['w2w'] = word2vec.trainWord2Vec(word2vecdata,300)
-    #print('W2W has been trained')
-    globals()['corexbow'] = createbow.createBBOW(globals()['corexdata']['docs'])
-    print('BBOW has been trained')
+def results():
+    discussions_keys = classifier.uniqueFromDocTopicMatrix(globals()['numberOfTopics'],globals()['topic_model']['labels']
+    ,globals()['start'],globals()['end'],globals()['ldadata']['keys'],globals()['ldadata']['dicts'])
+    #This will devicde discussions in each topic under 3 intention categires from ARDOC tool
+    topic_subdiscussions = []
+    i = 0
+    for topic_keys in discussions_keys: 
+        result=classifier.devideIntoCategories(discussions_keys[i],globals()['ldadata']['dicts'])
+        i = i+1
+        topic_subdiscussions.append(result)
+
+    title_selftext_vector_list = []
+    for topic_group in topic_subdiscussions:
+        topic_groups_vectors = []
+        for sub_topic, ids in topic_group:
+            subcategory_vector_list
+            subcategory_vector_list=getTitleSelftextVectors(ids,dicts,w2wmodel)
+            topic_groups_vectors.append({sub_topic:subcategory_vector_list})
+        title_selftext_vector_list.append(topic_groups_vectors)
+
+    chosen_discussion_list = []
+    i = 0
+    for each_topic in title_selftext_vector_list:
+        chosen_sub_discussion_list = []
+        for sub_topic_key, sub_topic_ids in each_topic:
+            chosen_discussions = []
+            chosen_discussions = classifier.getClusterSim(sub_topic_ids,i,20)
+            chosen_sub_discussion_list.append({sub_topic_key:chosen_discussions})
+        chosen_discussion_list.append({str(i):chosen_sub_discussion_list})
+        i = i+1 
 
 
-def traincorex():
-    trainTM.trainCorex(globals()['corexbow']['bow_mat'])
-
-
-
-def analyze():
-    getFeedback()
-    print('2 ok')
-    traininter()
-    return "inanalyze"
-
+    return chosen_discussion_list
 
 def list():
     return "inlist"

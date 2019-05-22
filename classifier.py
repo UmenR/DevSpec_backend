@@ -1,3 +1,4 @@
+from __future__ import print_function
 import json
 import os
 import requests
@@ -12,6 +13,7 @@ import nltk
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
+import helpers
 from corextopic import corextopic as ct
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -27,7 +29,6 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import pairwise_distances_argmin_min
 from pythonrouge.pythonrouge import Pythonrouge
 from math import ceil
-from __future__ import print_function
 from sklearn.datasets import make_blobs
 from sklearn.metrics import silhouette_samples, silhouette_score
 from word_cloud.word_cloud_generator import WordCloud
@@ -68,22 +69,6 @@ def isInTimeRange(key,dicts,start_time,end_time):
             else:
                 return False
 
-# keys = return val from  uniqueFromDocTopicMatrix , entdocs , entkeys = retdata.py
-# Depricated
-def getDocsAsStringFromKeys(keys,entdocs,entkeys):
-    compdocs = ""
-    for key in keys:
-        indexofitem = entkeys.index(key)
-        docfromdocs = entdocs[indexofitem]
-        compdocs+=docfromdocs
-    
-    sentlist = compdocs.split(".")
-    space_inds = [ind for ind,sent in enumerate(sentlist) if  sent.isspace()]
-    sentlist = [i for j, i in enumerate(sentlist) if j not in space_inds]
-    empt_inds = [ind for ind,sent in enumerate(sentlist) if  sent=='']
-    sentlist = [i for j, i in enumerate(sentlist) if j not in empt_inds]
-    return sentlist
-
 #This will categorize every discussion regardless of the topic under the 5 subcategories
 # 2. filtered_keys = output from uniqueFromDocTopicMatrix dictionaries = retdata.py
 def devideIntoCategories(filterd_keys,dictionaries):
@@ -104,22 +89,22 @@ def devideIntoCategories(filterd_keys,dictionaries):
 
 # 3. the out put from No 2 , is a 5 item dict pass any dict item to the following as ids
 #dictionaries = retdata.py
-def getTitleSelftextVectors(ids,dictionaries):
+def getTitleSelftextVectors(ids,dictionaries,w2vModel):
     id_vector_map =[]
     for ide in ids:
         for dic in dictionaries:
             if ide == dic['key']:
                 titleandselftext = dic['title'] + ' . ' + dic['selftext']
                 titleandselftext = re.sub(r'&\S+','',titleandselftext)
-                titleandselftext = clean(titleandselftext,1)
+                titleandselftext = helpers.clean(titleandselftext,1)
                 
-                vector=avg_sentence(titleandselftext.split(),model.wv)
+                vector=helpers.avg_sentence(titleandselftext.split(),w2vModel.wv)
                 if np.any(vector) == True:
                     id_vector_map.append({'key':dic['key'],'vec':vector,'titself':titleandselftext})
     return id_vector_map
 
 # helper for method below
-def removeBelowMedian(subdiscussions,topic):
+def removeBelowMedian(subdiscussions,topic,topic_model,w2vModel):
     topic_sent = ""
     topic_prob_tuple = topic_model.get_topics(topic=topic, n_words=25)
     for word,prob in topic_prob_tuple:
@@ -127,11 +112,11 @@ def removeBelowMedian(subdiscussions,topic):
             topic_sent +=  word + " "
     
     topic_sent=topic_sent.strip()
-    topic_sent_vec = avg_sentence(topic_sent.split(),model.wv)
+    topic_sent_vec = helpers.avg_sentence(topic_sent.split(),w2vModel.wv)
     
     scored_items = []
     for item in subdiscussions:
-        sim = cosine_sim(topic_sent_vec,item['vec'])
+        sim = helpers.cosine_sim(topic_sent_vec,item['vec'])
         scored_items.append({'key':item['key'],'vec':item['vec'],'sim':sim,'titself':item['titself']})
     
     scored_items.sort(key=lambda item:item['sim'], reverse=False)
@@ -190,7 +175,7 @@ def getClusters(discussions):
         ids.append(vector['key'])
         stringlist.append(vector['titself'])
             
-    n_clusters = determine_clusters(vectorlist, len(vectorlist))
+    n_clusters = helpers.determineClusters(vectorlist, len(vectorlist))
     kmeans = KMeans(n_clusters=n_clusters)
     
     kmeans = kmeans.fit(vectorlist)
@@ -205,69 +190,13 @@ def getClusters(discussions):
         clstidx = closest[i]
         clstelement = vectorlist[clstidx]
         for element in currentcluster:
-            sim = cosine_sim(clstelement,vectorlist[element])
+            sim = helpers.cosine_sim(clstelement,vectorlist[element])
             if math.isnan(sim)== False:
                 appendcluster.append({'key':ids[int(element)],'sim':sim,'txt':stringlist[int(element)],
                                     'vec':vectorlist[int(element)]})
         appendcluster.sort(key=lambda item:item['sim'], reverse=True)
         clusterlist.append(appendcluster)
         return clusterlist
-
-#Depricated
-def chooseDiscussions(clusters,num):
-    finaldisc = []
-    filterdclusters = clusters
-    if len(filterdclusters) == num:
-        for cluster in filterdclusters:
-            finaldisc.append(cluster[0])
-            
-    elif len(filterdclusters) > num:
-        alldiscussions = []
-        for cluster in filterdclusters:
-            alldiscussions.append(cluster[0])
-            
-        alldiscussions.sort(key=lambda item:item['sim'], reverse=True)
-        finaldisc = alldiscussions[:num]
-        
-    else:
-        allitems = 0
-        for cluster in filterdclusters:
-            allitems+=len(cluster)
-        print('all items ' + str(allitems))
-        if allitems <= num:
-            for cluster in filterdclusters:
-                for element in cluster:
-                    finaldisc.append(element)
-        
-        else:
-            items_per_cluster = int(num/len(filterdclusters))
-            lowest_number = items_per_cluster
-            for cluster in filterdclusters:
-                if len(cluster) < lowest_number:
-                    lowest_number = len(cluster)
-            
-            if lowest_number == items_per_cluster:
-                print(lowest_number)
-                for cluster in filterdclusters:
-                    items_to_append = cluster[:lowest_number]
-                    for item in items_to_append:
-                        finaldisc.append(item)
-            else:
-                remaining_discussions = []
-                for cluster in filterdclusters:
-                    finaldisc.append(cluster[:lowest_number])
-                    if len(cluster)>lowest_number:
-                        items_to_append = cluster[:lowest_number]
-                        for item in items_to_append:
-                            remaining_discussions.append(item)
-                            
-                remaining_item_count = num - len(finaldisc)
-                remaining_discussions.sort(key=lambda item:item['sim'], reverse=True)
-                items_to_append = remaining_discussions[:remaining_item_count]
-                for item in items_to_append:
-                    finaldisc.append(item)    
-    print('final len : '+ str(len(finaldisc)))
-    return finaldisc
 
 #chosendiscussions = choose_discussions(clusters=chosenclusters,num=20)
 #print(len(chosendiscussions))

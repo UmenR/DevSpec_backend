@@ -2,10 +2,10 @@ import os
 import json
 import helpers
 
-def retriveword2vecdata():
+def retriveword2vecdata(game='pubg'):
     sentences = []
     #Todo Replace with bucket storage 
-    with open('pubg-dataset.txt', 'r') as f:
+    with open(game+'-dataset.txt', 'r') as f:
         for eachline in f:
             #clean the /n
             eachline = eachline.strip('\n')
@@ -16,26 +16,6 @@ def retriveword2vecdata():
                     eachsentence = eachsentence.split()
                     sentences.append(eachsentence)
     return sentences
-
-def clean(text,tpe=0):
-    punctuation = "!\"#$%&'()*+,-/:;<=>?@[\]^_`{|}~\n"
-    if tpe == 1:
-        punctuation +="."
-    text=re.sub(r'http\S+', '', text)
-    printable = set(string.printable)
-    filter(lambda x: x in printable, text)
-    regex1 = re.compile('[%s]' % re.escape(punctuation))
-    text = regex1.sub('',text)
-    text = text.replace('deleted', '')
-    stripped_text = ''
-    for c in text:
-        stripped_text += c if len(c.encode(encoding='utf_8'))==1 else ''
-    if tpe == 2:
-        stripped_text=re.sub(r'(?<!\d)\.|\.(?!\d)', '*', stripped_text)
-
-    print('str')
-    print(stripped_text)
-    return stripped_text
 
 def retriveTMdata(start,end):
     oneDay = 86400
@@ -62,7 +42,7 @@ def retriveTMdata(start,end):
                 else:
                     concatString = document['title'] +  ' . ' + document['selftext'] + ' . ' + document['gencomments']
                     uncleaned = concatString
-                    concatString = clean(concatString)
+                    concatString = helpers.clean(concatString)
                     plainText.append(str.lower(concatString))
                     keys.append(document['id'])
                     classifications.append(document['classifierresults'])

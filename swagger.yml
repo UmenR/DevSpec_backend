@@ -20,10 +20,6 @@ paths:
       summary: Conduct the analysis and return the user the topic coherence details for each topic
       description: Returns topic coherence details
       parameters:
-        - name: game
-          in: query
-          type: string
-          description: The name of the subreddit that needs to be analyzed
         - name: start
           in: query
           type: integer
@@ -45,6 +41,48 @@ paths:
           description: Successful completed the analysis
           schema:
             type: string
+
+  /w2wmodel:
+    get:
+      operationId: main.w2wmodel
+      tags:
+        - Subreddits
+      summary: Check if the W2W model is trained for the given subreddit. IF not train the relavent W2W model.
+      description: Returns TRUE once the model is tranined or the model is already existing
+      parameters:
+        - name: game
+          in: query
+          type: string
+          description: The name of the subreddit that the word2vec model needs to be constructed
+      responses:
+        200:
+          description: Successful completed the analysis
+          schema:
+            type: string
+
+  /results:
+    get:
+      operationId: main.results
+      tags:
+        - Analyze
+      summary: Return the summary and the group of id's for each topic declared by the end user.
+      description: Returns TRUE once the model is tranined or the model is already existing
+      responses:
+        200:
+          description: Successful completed the analysis
+          schema:
+            type: array
+            items:
+              properties:
+                name:
+                  type: string
+                  description: the name of the category
+                ids:
+                  type: array
+                  description: the ids for each category
+                summary:
+                  type: string
+                  description: the summary of each category
             
                   
     
