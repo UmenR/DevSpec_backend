@@ -1,9 +1,9 @@
 
 
-def get_comment_summary(comments,title,topic_vector):          
+def get_comment_summary(comments,title,topic_vector,w2wmodel):          
     comments = clean(comments,2)
     title= clean(title,1)
-    title_vector = avg_sentence(title.strip().split(),model.wv)
+    title_vector = helpers.avg_sentence(title.strip().split(),w2wmodel.wv)
     sentences = comments.split('*')
     filteredsentences = []
     filteredsentences = [element for element in sentences if len(element) > 0 and element.isspace()==False and element!='']
@@ -11,8 +11,8 @@ def get_comment_summary(comments,title,topic_vector):
     scoredsentences = []
     summary =''
     for sentence in filteredsentences:
-        vector = avg_sentence(sentence.strip().split(),model.wv)
-        titlesim = cosine_sim(title_vector,vector)
+        vector = helpers.avg_sentence(sentence.strip().split(),model.wv)
+        titlesim = helpers.cosine_sim(title_vector,vector)
         scoredsentences.append({'text':sentence,'score':titlesim})
         
     scoredsentences.sort(key=lambda item:item['score'],reverse=True)
@@ -23,7 +23,7 @@ def get_comment_summary(comments,title,topic_vector):
         
     return summary
 
-def create_title_summaries(selected,dicts,topic):
+def create_title_summaries(selected,dicts,topic,topic_model,w2wmodel):
     topic_sent = ""
     topic_prob_tuple = topic_model.get_topics(topic=topic, n_words=25)
     for word,prob in topic_prob_tuple:
@@ -31,7 +31,7 @@ def create_title_summaries(selected,dicts,topic):
             topic_sent +=  word + " "
     
     topic_sent=topic_sent.strip()
-    topic_sent_vec = avg_sentence(topic_sent.split(),model.wv)
+    topic_sent_vec = avg_sentence(topic_sent.split(),w2wmodel.wv)
     summary = []
     clusters =[]
     for selection in selected:
@@ -39,7 +39,7 @@ def create_title_summaries(selected,dicts,topic):
             if selection['key'] == item['key']:
                 #print('--'*40)
                 concatstring = item['selftext']
-                concatstring = clean(concatstring,tpe=2)
+                concatstring = helpers.clean(concatstring,tpe=2)
                 sentences = concatstring.split('*')
                 filteredsentences = []
                 filteredsentences = [element for element in sentences if len(element) > 0 and element.isspace()==False and 
@@ -48,7 +48,7 @@ def create_title_summaries(selected,dicts,topic):
                 scoredvectors = []
                 scoredsentences = []
                 for sentence in filteredsentences:
-                    vector = avg_sentence(sentence.strip().split(),model.wv)
+                    vector = helpers.avg_sentence(sentence.strip().split(),w2wmodel.wv)
                     scoredsentences.append({'sentence':sentence,'vec':vector})
                     scoredvectors.append(vector)
                     
@@ -76,7 +76,7 @@ def create_title_summaries(selected,dicts,topic):
                     if len(titlesentences) > 1:
                         for titlesentence in titlesentences:
                             if titlesentence != '' and titlesentence.isspace() == False: 
-                                vector = avg_sentence(titlesentence.strip().split(),model.wv)
+                                vector = avg_sentence(titlesentence.strip().split(),w2wmodel.wv)
                                 score = cosine_sim(topic_sent_vec,vector)
                                 
                                 if score > fintitlescore:
@@ -88,7 +88,7 @@ def create_title_summaries(selected,dicts,topic):
                     
                     titlesum = fintitlesent + '.' + titlesum
                     summarizedcomments = get_comment_summary(comments=item['comments'],title=item['title']+'.'+
-                                                             item['selftext'],topic_vector=topic_sent_vec)
+                                                             item['selftext'],topic_vector=topic_sent_vec,w2wmodel)
                     summary.append({'header':titlesum,'content':summarizedcomments,'key':item['key']})
                     
                 else:
@@ -100,7 +100,7 @@ def create_title_summaries(selected,dicts,topic):
                     if len(titlesentences) > 1:
                         for titlesentence in titlesentences:
                             if titlesentence != '' and titlesentence.isspace() == False: 
-                                vector = avg_sentence(titlesentence.strip().split(),model.wv)
+                                vector = avg_sentence(titlesentence.strip().split(),w2wmodel.wv)
                                 score = cosine_sim(topic_sent_vec,vector)          
                                 if score > fintitlescore:
                                     fintitlescore = score
@@ -112,7 +112,7 @@ def create_title_summaries(selected,dicts,topic):
                     for sent in scoredsentences:
                         titlesum = titlesum + " . " + sent['sentence']
                     
-                    summarizedcomments = get_comment_summary(comments=item['comments'],title=item['title']+'.'+item['selftext'],topic_vector=topic_sent_vec)
+                    summarizedcomments = get_comment_summary(comments=item['comments'],title=item['title']+'.'+item['selftext'],topic_vector=topic_sent_vec,w2wmodel)
                     summary.append({'header':titlesum,'content':summarizedcomments,'key':item['key']})
                     
     return summary    

@@ -37,7 +37,7 @@ def w2wmodel(game):
         #globals()['w2w'] = word2vec.trainWord2Vec(word2vecdata,300)
         #globals()['isTrainedW2w'] = True
         #return "True"
-    model = gensim.models.KeyedVectors.load_word2vec_format('./GoogleNews-vectors-negative300.bin', binary=True,limit=100000)
+    model = gensim.models.KeyedVectors.load_word2vec_format('./modelworkplz.bin', binary=True,limit=100000)
     globals()['w2w']= model
     return "True"
         
@@ -107,7 +107,7 @@ def results():
     topic_subdiscussions = []
     i = 0
     for topic_keys in discussions_keys: 
-        result=devide_into_categories(discussions_keys[i],globals()['corexData']['dicts'])
+        result=classifier.devideIntoCategories(discussions_keys[i],globals()['corexData']['dicts'])
         i = i+1
         topic_subdiscussions.append(result)
 
@@ -118,7 +118,7 @@ def results():
         for sub_topic, ids in topic_group.items():
             if len(ids)>0:
                 subcategory_vector_list = []
-                subcategory_vector_list=get_title_selftext_vectors(ids,globals()['corexData']['dicts'])
+                subcategory_vector_list=classifier.getTitleSelftextVectors(ids,globals()['corexData']['dicts'],globals()['w2w'])
                 topic_groups_vectors[sub_topic]=subcategory_vector_list
             
         title_selftext_vector_list[i]=topic_groups_vectors
@@ -130,14 +130,14 @@ def results():
         chosen_sub_discussion_list = dict()
         for sub_topic,sub_topic_items in each_topic_item.items():
             chosen_discussions = []
-            chosen_discussions = get_cluster_sim(sub_topic_items,key,2)
+            chosen_discussions = classifier.getClusterSim(sub_topic_items,key,2)
             chosen_sub_discussion_list[sub_topic]=chosen_discussions
         chosen_discussion_list[key]=chosen_sub_discussion_list
     all_summaries = dict()
     for key,chosen_discussions_topic in chosen_discussion_list.items():
         single_topic_summary = dict()
         for sub_topic_name,listitems in chosen_discussions_topic.items():
-            grouped_summaries=create_title_summaries(listitems,globals()['corexData']['dicts'],key)
+            grouped_summaries=classifier.create_title_summaries(listitems,globals()['corexData']['dicts'],key,globals()['corexModel'],globals()['w2w'])
             final_summary = ""
             for discussion_summary in grouped_summaries:
                 final_summary = final_summary + " " + discussion_summary['header'] + " " + discussion_summary['content'] + "|"
