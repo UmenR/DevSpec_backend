@@ -198,5 +198,57 @@ def getClusters(discussions):
         clusterlist.append(appendcluster)
         return clusterlist
 
-#chosendiscussions = choose_discussions(clusters=chosenclusters,num=20)
-#print(len(chosendiscussions))
+def chooseDiscussions(clusters,num):
+    finaldisc = []
+    filterdclusters = clusters
+    if len(filterdclusters) == num:
+        for cluster in filterdclusters:
+            finaldisc.append(cluster[0])
+            
+    elif len(filterdclusters) > num:
+        alldiscussions = []
+        for cluster in filterdclusters:
+            alldiscussions.append(cluster[0])
+            
+        alldiscussions.sort(key=lambda item:item['sim'], reverse=True)
+        finaldisc = alldiscussions[:num]
+        
+    else:
+        allitems = 0
+        for cluster in filterdclusters:
+            allitems+=len(cluster)
+        #print('all items ' + str(allitems))
+        if allitems <= num:
+            for cluster in filterdclusters:
+                for element in cluster:
+                    finaldisc.append(element)
+        
+        else:
+            items_per_cluster = int(num/len(filterdclusters))
+            lowest_number = items_per_cluster
+            for cluster in filterdclusters:
+                if len(cluster) < lowest_number:
+                    lowest_number = len(cluster)
+            
+            if lowest_number == items_per_cluster:
+                #print(lowest_number)
+                for cluster in filterdclusters:
+                    items_to_append = cluster[:lowest_number]
+                    for item in items_to_append:
+                        finaldisc.append(item)
+            else:
+                remaining_discussions = []
+                for cluster in filterdclusters:
+                    finaldisc.append(cluster[:lowest_number])
+                    if len(cluster)>lowest_number:
+                        items_to_append = cluster[:lowest_number]
+                        for item in items_to_append:
+                            remaining_discussions.append(item)
+                            
+                remaining_item_count = num - len(finaldisc)
+                remaining_discussions.sort(key=lambda item:item['sim'], reverse=True)
+                items_to_append = remaining_discussions[:remaining_item_count]
+                for item in items_to_append:
+                    finaldisc.append(item)    
+    #print('final len : '+ str(len(finaldisc)))
+    return finaldisc

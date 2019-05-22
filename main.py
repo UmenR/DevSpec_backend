@@ -37,7 +37,7 @@ def w2wmodel(game):
         #globals()['w2w'] = word2vec.trainWord2Vec(word2vecdata,300)
         #globals()['isTrainedW2w'] = True
         #return "True"
-    model = gensim.models.Word2Vec.load_word2vec_format('./GoogleNews-vectors-negative300.bin', binary=True,limit=100000)
+    model = gensim.models.KeyedVectors.load_word2vec_format('./GoogleNews-vectors-negative300.bin', binary=True,limit=100000)
     globals()['w2w']= model
     return "True"
         
@@ -67,39 +67,84 @@ def analyze(start,end,topics,keywords):
     return results
 
 
+# def results():
+#     discussions_keys = classifier.uniqueFromDocTopicMatrix(globals()['numberOfTopics'],globals()['corexModel'].labels
+#     ,globals()['startTime'],globals()['endTime'],globals()['corexData']['keys'],globals()['corexData']['dicts'])
+#     #This will devicde discussions in each topic under 3 intention categires from ARDOC tool
+#     topic_subdiscussions = []
+#     i = 0
+#     for topic_keys in discussions_keys: 
+#         result=classifier.devideIntoCategories(discussions_keys[i],globals()['corexData']['dicts'])
+#         i = i+1
+#         topic_subdiscussions.append(result)
+
+#     title_selftext_vector_list = []
+#     for topic_group in topic_subdiscussions:
+#         topic_groups_vectors = []
+#         for sub_topic, ids in topic_group:
+#             subcategory_vector_list
+#             subcategory_vector_list=getTitleSelftextVectors(ids,dicts,w2wmodel)
+#             topic_groups_vectors.append({sub_topic:subcategory_vector_list})
+#         title_selftext_vector_list.append(topic_groups_vectors)
+
+#     chosen_discussion_list = []
+#     i = 0
+#     for each_topic in title_selftext_vector_list:
+#         chosen_sub_discussion_list = []
+#         for sub_topic_key, sub_topic_ids in each_topic:
+#             chosen_discussions = []
+#             chosen_discussions = classifier.getClusterSim(sub_topic_ids,i,20)
+#             chosen_sub_discussion_list.append({sub_topic_key:chosen_discussions})
+#         chosen_discussion_list.append({str(i):chosen_sub_discussion_list})
+#         i = i+1 
+
+
+#     return chosen_discussion_list
 def results():
-    discussions_keys = classifier.uniqueFromDocTopicMatrix(globals()['numberOfTopics'],globals()['topic_model']['labels']
-    ,globals()['start'],globals()['end'],globals()['ldadata']['keys'],globals()['ldadata']['dicts'])
+    discussions_keys = classifier.uniqueFromDocTopicMatrix(globals()['numberOfTopics'],globals()['corexModel'].labels
+    ,globals()['startTime'],globals()['endTime'],globals()['corexData']['keys'],globals()['corexData']['dicts'])
     #This will devicde discussions in each topic under 3 intention categires from ARDOC tool
     topic_subdiscussions = []
     i = 0
     for topic_keys in discussions_keys: 
-        result=classifier.devideIntoCategories(discussions_keys[i],globals()['ldadata']['dicts'])
+        result=devide_into_categories(discussions_keys[i],globals()['corexData']['dicts'])
         i = i+1
         topic_subdiscussions.append(result)
 
-    title_selftext_vector_list = []
-    for topic_group in topic_subdiscussions:
-        topic_groups_vectors = []
-        for sub_topic, ids in topic_group:
-            subcategory_vector_list
-            subcategory_vector_list=getTitleSelftextVectors(ids,dicts,w2wmodel)
-            topic_groups_vectors.append({sub_topic:subcategory_vector_list})
-        title_selftext_vector_list.append(topic_groups_vectors)
-
-    chosen_discussion_list = []
+    title_selftext_vector_list = dict()
     i = 0
-    for each_topic in title_selftext_vector_list:
-        chosen_sub_discussion_list = []
-        for sub_topic_key, sub_topic_ids in each_topic:
+    for topic_group in topic_subdiscussions:
+        topic_groups_vectors = dict()
+        for sub_topic, ids in topic_group.items():
+            if len(ids)>0:
+                subcategory_vector_list = []
+                subcategory_vector_list=get_title_selftext_vectors(ids,globals()['corexData']['dicts'])
+                topic_groups_vectors[sub_topic]=subcategory_vector_list
+            
+        title_selftext_vector_list[i]=topic_groups_vectors
+        i = i+1
+
+    chosen_discussion_list = dict()
+    i = 0
+    for key,each_topic_item in title_selftext_vector_list.items():
+        chosen_sub_discussion_list = dict()
+        for sub_topic,sub_topic_items in each_topic_item.items():
             chosen_discussions = []
-            chosen_discussions = classifier.getClusterSim(sub_topic_ids,i,20)
-            chosen_sub_discussion_list.append({sub_topic_key:chosen_discussions})
-        chosen_discussion_list.append({str(i):chosen_sub_discussion_list})
-        i = i+1 
+            chosen_discussions = get_cluster_sim(sub_topic_items,key,2)
+            chosen_sub_discussion_list[sub_topic]=chosen_discussions
+        chosen_discussion_list[key]=chosen_sub_discussion_list
+    all_summaries = dict()
+    for key,chosen_discussions_topic in chosen_discussion_list.items():
+        single_topic_summary = dict()
+        for sub_topic_name,listitems in chosen_discussions_topic.items():
+            grouped_summaries=create_title_summaries(listitems,globals()['corexData']['dicts'],key)
+            final_summary = ""
+            for discussion_summary in grouped_summaries:
+                final_summary = final_summary + " " + discussion_summary['header'] + " " + discussion_summary['content'] + "|"
+            single_topic_summary[sub_topic_name] = final_summary
+        all_summaries[key]=single_topic_summary
 
-
-    return chosen_discussion_list
+    return all_summaries
 
 def list():
     return "inlist"
