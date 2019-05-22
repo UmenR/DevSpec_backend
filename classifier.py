@@ -77,15 +77,32 @@ def devideIntoCategories(filterd_keys,dictionaries):
     bug = []
     for filterd_key in filterd_keys:
         for dictionary in dictionaries:         
-            if filterd_key == dictionary['key']:
-                if int(dictionary['class']['other'])>0:
+            if sentence == dictionary['key']:
+                scoredsub = {'other':(int(dictionary['class']['other'])-8),'bug':int(dictionary['class']['bug'])
+                            ,'inforeq':int(dictionary['class']['inforeq']),'infogive':int(dictionary['class']['infogive']),
+                            'suggestion':int(dictionary['class']['suggestion'])}
+                sorted_score = sorted(scoredsub.items(), key=lambda kv: kv[1],reverse=True)
+                if sorted_score[0][1] > 0:
+                    if sorted_score[0][0] == "other":
+                        other.append(dictionary['key'])
+                    if sorted_score[0][0] == "bug":
+                        bug.append(dictionary['key'])
+                    if sorted_score[0][0] == "inforeq":
+                        inforeq.append(dictionary['key'])
+                    if sorted_score[0][0] == "infogive":
+                        infogive.append(dictionary['key'])
+                    if sorted_score[0][0] == "suggestion":
+                        suggestion.append(dictionary['key'])
+                else:
                     other.append(dictionary['key'])
-                if int(dictionary['class']['bug'])>0:
-                    bug.append(dictionary['key'])
-                if int(dictionary['class']['inforeq'])>0 or int(dictionary['class']['infogive'])>0 or int(dictionary['class']['suggestion'])>0:
-                    informative.append(dictionary['key'])
+#                 if int(dictionary['class']['other'])>0:
+#                     other.append(dictionary['key'])
+#                 if int(dictionary['class']['bug'])>0:
+#                     bug.append(dictionary['key'])
+#                 if int(dictionary['class']['inforeq'])>0 or int(dictionary['class']['infogive'])>0 or int(dictionary['class']['suggestion'])>0:
+#                     informative.append(dictionary['key'])
                     
-    return {'ohter':other,'informative':informative,'bug':bug}
+    return {'ohter':other,'inforeq':inforeq,'bug':bug,'infogive':infogive,'suggestion':suggestion}
 
 # 3. the out put from No 2 , is a 5 item dict pass any dict item to the following as ids
 #dictionaries = retdata.py
@@ -130,7 +147,7 @@ def removeBelowMedian(subdiscussions,topic,topic_model,w2vModel):
         top = bottom + 1
         median = (scored_items[int(bottom)]['sim'] + scored_items[int(top)]['sim'])/2
     else:
-        middle = (len(scored_items) + 1)/2
+        middle = int((len(scored_items) + 1)/2)
         median = scored_items[middle]['sim']
     
     filtered_items = []
