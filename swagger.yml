@@ -20,26 +20,26 @@ paths:
       summary: Conduct the analysis and return the user the topic coherence details for each topic
       description: Returns topic coherence details
       parameters:
-        - name: start
-          in: query
+        - in: query
+          name: start
           description: The name start time to analyze discussions
           schema:
             type: integer
             example: 1509494400
-        - name: end
-          in: query
+        - in: query
+          name: end
           description: The name end time to analyze discussions
           schema:
             type: integer
             example: 1539302400
-        - name: topics
-          in: query
+        - in: query
+          name: topics
           description: The number of topics defined by user
           schema:
             type: integer
             example: 7
-        - name: keywords
-          in: query
+        - in: query
+          name: keywords
           description: topic and keyword pairs
           schema:
             type: string
@@ -58,8 +58,8 @@ paths:
       summary: Check if the W2W model is trained for the given subreddit. IF not train the relavent W2W model.
       description: Returns TRUE once the model is tranined or the model is already existing
       parameters:
-        - name: game
-          in: query
+        - in: query
+          name: game
           description: The name of the subreddit that the word2vec model needs to be constructed
           schema:
             type: string
