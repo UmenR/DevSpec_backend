@@ -43,15 +43,7 @@ def w2wmodel(game):
     globals()['w2w']= model
     return "True"
 
-default_anchors = [
-            [ 'fps','ram','cpu','freeze','crash','gpu'],
-            [ 'gun','crosshair','shoot','recoil','control','spray'], 
-            ['crates','bp','skin','skins','camo'],
-            ['footsteps','sound'],
-            ['erangel','map','maps','road','roads','compound'],
-            ['anti','cheat','hackers','cheater','hacks'],
-            ['server','desync','lag','network','ping']
-            ]        
+default_anchors = '{"performance":["fps","ram","cpu","freeze","crash","gpu"],"gunplay":["gun","crosshair","shoot","recoil","control","spray"],"microtransactions":["crates","bp","skin","skins","camo"],"sounds":["footsteps","sound"],"maps":["erangel","map","maps","road","roads","compound"],"hackers":["anti","cheat","hackers","cheater","hacks"],"servers":["server","desync","lag","network","ping"]}'        
 '''Input query parameters , End, Topics, Keywords
 @start - Integer : Start time to consider discussions withing range
 @end - Integer : End time to disregard discussions
@@ -62,7 +54,8 @@ Returns: topic coherence score graph, keywords per each topic
 '''
 def analyze(start,end,topics=7,keywords=default_anchors):
     #print(keywords)
-    keyword_dict=json.loads(keywordssd,object_pairs_hook=OrderedDict)
+    keywords = str(keywords)
+    keyword_dict=json.loads(keywords,object_pairs_hook=OrderedDict)
     #print(keyword_dict)
     keyword_list=[]
     topic_list=[]
@@ -83,6 +76,11 @@ def analyze(start,end,topics=7,keywords=default_anchors):
 
     #return the topic cohession scores we will go with the default 20 top words example in this case.
     results = helpers.get_topic_cohission(topics,globals()['w2w'],topic_model)
+    wordclouds = helpers.get_word_clouds(topics,keyword_list,10)
+
+    result_dict = dict()
+    result_dict['scores'] = results
+    result_dict['wordclouds'] = wordclouds
 
     return results
 

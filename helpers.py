@@ -214,3 +214,24 @@ def get_k_means_cluster(tfidf_matrix, num_clusters, is_list=True):
 def run_silhoutte_analysis(X, cluster, num_cluster):
     sil_avg = silhouette_score(X, cluster)
     return sil_avg
+
+def get_word_clouds(num_topics,anchors,top_n):
+    topic_list_scores = []
+    for i in range(num_topics):
+        number_of_anchors = 0
+        if i <= (len(anchors) -1):
+            number_of_anchors = len(anchors[i])
+        
+        topn = top_n
+        topn = topn + number_of_anchors
+        #print(top_n)
+        topic_prob_tuple = topic_model.get_topics(topic=i, n_words=topn)
+        list_of_scores= []
+        #print(list_of_scores)
+        for word,score in topic_prob_tuple:
+            list_of_scores.append([word,score*5])
+        
+        if number_of_anchors > 0:
+            list_of_scores = list_of_scores[number_of_anchors:]
+        topic_list_scores.append(list_of_scores)
+    return topic_list_scores

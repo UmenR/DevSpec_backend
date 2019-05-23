@@ -165,6 +165,14 @@ def removeBelowMedian(subdiscussions,topic,topic_model,w2vModel):
 #4 The following method will get discussions for a certain topic under a sub category such as bug etc.
 # subdiscussions = 3 , topic = any topic from the topic list , sentnum = user input
 #most simillar after clustering approach
+'''
+The logic for discussion selection is explained hearwith. The discussions will first be scored only considering the title + selftext(hence the assumption in diagram) sentence 
+this will happen using the cosine simmilarity compared to the syntatic sentence generated using the W2W + TM approach.
+Then scores which have below median scores will be discarded.
+Then the remaining disucssions will be clustered into a number of clusters determined by a shilouette analysis.
+Then the requested number of discussions will be constructed from discussions taken out of the clusters.
+This approach is taken to maintain a simple cutoff score procedure and clustering is done to reduce redundancy,
+'''
 def getClusterSim(subdiscussions,topic,sentnum,topic_model,w2wmodel):
     if len(subdiscussions) / 2  >= sentnum * 2:
         median_removed_list = removeBelowMedian(subdiscussions,topic,topic_model,w2wmodel)
@@ -175,7 +183,7 @@ def getClusterSim(subdiscussions,topic,sentnum,topic_model,w2wmodel):
         else:
             median_removed_list.sort(key=lambda item:item['sim'], reverse=True)
             return median_removed_list
-    elif len(subdiscussions) == sentnum:
+    elif len(subdiscussions) <= sentnum:
         return subdiscussions
     else:
         clusterlist = getClusters(subdiscussions)
@@ -242,7 +250,8 @@ def chooseDiscussions(clusters,num):
             for cluster in filterdclusters:
                 for element in cluster:
                     finaldisc.append(element)
-        
+        #now we try to fill the num from discussions the else statement below will take the avg and fill the remaining
+        #Note the issues that might arrise from sorting
         else:
             items_per_cluster = int(num/len(filterdclusters))
             lowest_number = items_per_cluster
@@ -290,13 +299,20 @@ def get_comment_summary(comments,title,topic_vector,w2wmodel):
         scoredsentences.append({'text':sentence,'score':titlesim})
         
     scoredsentences.sort(key=lambda item:item['score'],reverse=True)
+    # 5 From comments
     scoredsentences = scoredsentences[:5]
     for sentence in scoredsentences:
         #print(sentence)
         summary += sentence['text'] + '.'
         
     return summary
-
+'''
+The summaries will be created for each discussion using 1 sentence from the title 
+the number of sentences using a silhouette analysis from the self text section
+and 5 sentences from the comments. Note that the comments are not clustered as clustering is not 
+effective for comments from the observations made. However the selftext sections are clustered as 
+they do infact contain sentnecs that are relavent unlike some sentences from the comments section.
+'''
 def create_title_summaries(selected,dicts,topic,topic_model,w2wmodel):
     topic_sent = ""
     topic_prob_tuple = topic_model.get_topics(topic=topic, n_words=25)
