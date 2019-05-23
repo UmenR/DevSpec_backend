@@ -23,25 +23,23 @@ paths:
         - name: start
           in: query
           type: integer
-          description: The name start time to analyze discussions
           example: 1509494400
+          description: The name start time to analyze discussions
         - name: end
           in: query
           type: integer
-          description: The name end time to analyze discussions
           example: 1539302400
+          description: The name end time to analyze discussions
         - name: topics
           in: query
           type: integer
-          description: The number of topics defined by user
-          default: 7
           example: 7
+          description: The number of topics defined by user
         - name: keywords
           in: query
           type: string
-          description: topic and keyword pairs
-          default: '{"performance":["fps","ram","cpu","freeze","crash","gpu"],"gunplay":["gun","crosshair","shoot","recoil","control","spray"],"microtransactions":["crates","bp","skin","skins","camo"],"sounds":["footsteps","sound"],"maps":["erangel","map","maps","road","roads","compound"],"hackers":["anti","cheat","hackers","cheater","hacks"],"servers":["server","desync","lag","network","ping"]}'
           example: '{"performance":["fps","ram","cpu","freeze","crash","gpu"],"gunplay":["gun","crosshair","shoot","recoil","control","spray"],"microtransactions":["crates","bp","skin","skins","camo"],"sounds":["footsteps","sound"],"maps":["erangel","map","maps","road","roads","compound"],"hackers":["anti","cheat","hackers","cheater","hacks"],"servers":["server","desync","lag","network","ping"]}'
+          description: topic and keyword pairs
       responses:
         200:
           description: Successful completed the analysis
@@ -59,8 +57,8 @@ paths:
         - name: game
           in: query
           type: string
-          description: The name of the subreddit that the word2vec model needs to be constructed
           example: 'PUBATTLEGROUNDS'
+          description: The name of the subreddit that the word2vec model needs to be constructed
       responses:
         200:
           description: Successful completed the analysis
