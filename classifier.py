@@ -75,9 +75,12 @@ def devideIntoCategories(filterd_keys,dictionaries):
     other = []
     informative= []
     bug = []
+    inforeq = []
+    infogive = []
+    suggestion = []
     for filterd_key in filterd_keys:
         for dictionary in dictionaries:         
-            if sentence == dictionary['key']:
+            if filterd_key == dictionary['key']:
                 scoredsub = {'other':(int(dictionary['class']['other'])-8),'bug':int(dictionary['class']['bug'])
                             ,'inforeq':int(dictionary['class']['inforeq']),'infogive':int(dictionary['class']['infogive']),
                             'suggestion':int(dictionary['class']['suggestion'])}
@@ -272,8 +275,8 @@ def chooseDiscussions(clusters,num):
 
 
 def get_comment_summary(comments,title,topic_vector,w2wmodel):          
-    comments = clean(comments,2)
-    title= clean(title,1)
+    comments = helpers.clean(comments,2)
+    title= helpers.clean(title,1)
     title_vector = helpers.avg_sentence(title.strip().split(),w2wmodel.wv)
     sentences = comments.split('*')
     filteredsentences = []
@@ -282,7 +285,7 @@ def get_comment_summary(comments,title,topic_vector,w2wmodel):
     scoredsentences = []
     summary =''
     for sentence in filteredsentences:
-        vector = helpers.avg_sentence(sentence.strip().split(),model.wv)
+        vector = helpers.avg_sentence(sentence.strip().split(),w2wmodel.wv)
         titlesim = helpers.cosine_sim(title_vector,vector)
         scoredsentences.append({'text':sentence,'score':titlesim})
         

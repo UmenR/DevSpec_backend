@@ -50,6 +50,8 @@ def w2wmodel(game):
 Returns: topic coherence score graph, keywords per each topic
 '''
 def analyze(start,end,topics,keywords):
+    print(keywords)
+    
     globals()['numberOfTopics'] = topics
     globals()['startTime'] = start
     globals()['endTime'] = end
