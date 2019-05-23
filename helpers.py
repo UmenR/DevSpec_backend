@@ -177,7 +177,7 @@ def get_topic_cohission(num_topic,w2v,topic_model,top_n=20):
             
         avg_coh_vals.append(tot_cos_sim/len(unique_pairs))
 
-    return {"cohession_vals":avg_coh_vals}
+    return avg_coh_vals
 
 def determineClusters(discs,length):
     range_val = 10
@@ -215,7 +215,7 @@ def run_silhoutte_analysis(X, cluster, num_cluster):
     sil_avg = silhouette_score(X, cluster)
     return sil_avg
 
-def get_word_clouds(num_topics,anchors,top_n):
+def get_word_clouds(num_topics,anchors,top_n,topic_model):
     topic_list_scores = []
     for i in range(num_topics):
         number_of_anchors = 0

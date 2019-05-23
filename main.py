@@ -76,13 +76,13 @@ def analyze(start,end,topics=7,keywords=default_anchors):
 
     #return the topic cohession scores we will go with the default 20 top words example in this case.
     results = helpers.get_topic_cohission(topics,globals()['w2w'],topic_model)
-    wordclouds = helpers.get_word_clouds(topics,keyword_list,10)
+    wordclouds = helpers.get_word_clouds(topics,keyword_list,10,topic_model)
 
     result_dict = dict()
     result_dict['scores'] = results
     result_dict['wordclouds'] = wordclouds
 
-    return results
+    return result_dict
 
 
 # def results():
