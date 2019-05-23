@@ -20,30 +20,22 @@ paths:
       summary: Conduct the analysis and return the user the topic coherence details for each topic
       description: Returns topic coherence details
       parameters:
-        - in: query
-          name: start
+        - name: start
+          in: query
+          type: integer
           description: The name start time to analyze discussions
-          schema:
-            type: integer
-            example: 1509494400
-        - in: query
-          name: end
+        - name: end
+          in: query
+          type: integer
           description: The name end time to analyze discussions
-          schema:
-            type: integer
-            example: 1539302400
-        - in: query
-          name: topics
+        - name: topics
+          in: query
+          type: integer
           description: The number of topics defined by user
-          schema:
-            type: integer
-            example: 7
-        - in: query
-          name: keywords
+        - name: keywords
+          in: query
+          type: string
           description: topic and keyword pairs
-          schema:
-            type: string
-            example: '{"performance":["fps","ram","cpu","freeze","crash","gpu"],"gunplay":["gun","crosshair","shoot","recoil","control","spray"],"microtransactions":["crates","bp","skin","skins","camo"],"sounds":["footsteps","sound"],"maps":["erangel","map","maps","road","roads","compound"],"hackers":["anti","cheat","hackers","cheater","hacks"],"servers":["server","desync","lag","network","ping"]}'
       responses:
         200:
           description: Successful completed the analysis
@@ -58,12 +50,10 @@ paths:
       summary: Check if the W2W model is trained for the given subreddit. IF not train the relavent W2W model.
       description: Returns TRUE once the model is tranined or the model is already existing
       parameters:
-        - in: query
-          name: game
+        - name: game
+          in: query
+          type: string
           description: The name of the subreddit that the word2vec model needs to be constructed
-          schema:
-            type: string
-            example: 'PUBATTLEGROUNDS'
       responses:
         200:
           description: Successful completed the analysis
