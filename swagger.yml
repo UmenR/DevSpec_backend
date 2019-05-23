@@ -24,18 +24,24 @@ paths:
           in: query
           type: integer
           description: The name start time to analyze discussions
+          example: 1509494400
         - name: end
           in: query
           type: integer
           description: The name end time to analyze discussions
+          example: 1539302400
         - name: topics
           in: query
           type: integer
           description: The number of topics defined by user
+          default: 7
+          example: 7
         - name: keywords
           in: query
           type: string
           description: topic and keyword pairs
+          default: '{"performance":["fps","ram","cpu","freeze","crash","gpu"],"gunplay":["gun","crosshair","shoot","recoil","control","spray"],"microtransactions":["crates","bp","skin","skins","camo"],"sounds":["footsteps","sound"],"maps":["erangel","map","maps","road","roads","compound"],"hackers":["anti","cheat","hackers","cheater","hacks"],"servers":["server","desync","lag","network","ping"]}'
+          example: '{"performance":["fps","ram","cpu","freeze","crash","gpu"],"gunplay":["gun","crosshair","shoot","recoil","control","spray"],"microtransactions":["crates","bp","skin","skins","camo"],"sounds":["footsteps","sound"],"maps":["erangel","map","maps","road","roads","compound"],"hackers":["anti","cheat","hackers","cheater","hacks"],"servers":["server","desync","lag","network","ping"]}'
       responses:
         200:
           description: Successful completed the analysis
@@ -54,6 +60,7 @@ paths:
           in: query
           type: string
           description: The name of the subreddit that the word2vec model needs to be constructed
+          example: 'PUBATTLEGROUNDS'
       responses:
         200:
           description: Successful completed the analysis

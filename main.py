@@ -5,6 +5,8 @@ import trainTM
 import classifier
 import helpers
 import gensim
+import json
+from collections import OrderedDict
 
 
 isTrainedW2w = False
@@ -40,7 +42,16 @@ def w2wmodel(game):
     model = gensim.models.KeyedVectors.load_word2vec_format('./modelworkplz.bin', binary=True,limit=100000)
     globals()['w2w']= model
     return "True"
-        
+
+default_anchors = [
+            [ 'fps','ram','cpu','freeze','crash','gpu'],
+            [ 'gun','crosshair','shoot','recoil','control','spray'], 
+            ['crates','bp','skin','skins','camo'],
+            ['footsteps','sound'],
+            ['erangel','map','maps','road','roads','compound'],
+            ['anti','cheat','hackers','cheater','hacks'],
+            ['server','desync','lag','network','ping']
+            ]        
 '''Input query parameters , End, Topics, Keywords
 @start - Integer : Start time to consider discussions withing range
 @end - Integer : End time to disregard discussions
@@ -49,9 +60,17 @@ def w2wmodel(game):
 
 Returns: topic coherence score graph, keywords per each topic
 '''
-def analyze(start,end,topics,keywords):
-    print(keywords)
-    
+def analyze(start,end,topics=7,keywords=default_anchors):
+    #print(keywords)
+    keyword_dict=json.loads(keywordssd,object_pairs_hook=OrderedDict)
+    #print(keyword_dict)
+    keyword_list=[]
+    topic_list=[]
+    for topic,keywordset in keyword_dict.items():
+        keyword_list.append(keywordset)
+        topic_list.append(topic)
+    #print(keyword_list)
+    #print(topic_list)
     globals()['numberOfTopics'] = topics
     globals()['startTime'] = start
     globals()['endTime'] = end
@@ -59,8 +78,7 @@ def analyze(start,end,topics,keywords):
     ldadata = retdata.retriveTMdata(1509494400,1539302400)
     globals()['corexData'] = ldadata
     bowmodel = createbow.createBBOW(ldadata['docs'])
-    #We will be going with the default valudes disregarding user inputs
-    topic_model=trainTM.trainCorex(bowmodel['bow_mat'],bowmodel['bow_words'],ldadata['keys'])
+    topic_model=trainTM.trainCorex(bowmodel['bow_mat'],bowmodel['bow_words'],ldadata['keys'],topics,keyword_list)
     globals()['corexModel'] = topic_model
 
     #return the topic cohession scores we will go with the default 20 top words example in this case.
