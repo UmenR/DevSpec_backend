@@ -124,9 +124,8 @@ def results():
             grouped_summaries=classifier.create_title_summaries(listitems,globals()['corexData']['dicts'],key,globals()['corexModel'],globals()['w2w'])
             final_summary = ""
             for discussion_summary in grouped_summaries:
-                final_summary = final_summary + " " + " " discussion_summary['key'] + " " + discussion_summary['header'] + " " + discussion_summary['content']
+                final_summary = final_summary + " " + discussion_summary['key'] + " " + discussion_summary['header'] + " " + discussion_summary['content']
             single_topic_summary[sub_topic_name] = final_summary
         all_summaries[key]=single_topic_summary
 
     return all_summaries
-    
