@@ -96,16 +96,23 @@ def results():
         topic_subdiscussions.append(result)
 
     title_selftext_vector_list = dict()
+    chosen_discussion_list_keys = dict()
     i = 0
     for topic_group in topic_subdiscussions:
         topic_groups_vectors = dict()
+        chosen_sub_discussion_list_keys = dict()
         for sub_topic, ids in topic_group.items():
             if len(ids)>0:
                 subcategory_vector_list = []
+                subcategory_key_list = []
                 subcategory_vector_list=classifier.getTitleSelftextVectors(ids,globals()['corexData']['dicts'],globals()['w2w'])
                 topic_groups_vectors[sub_topic]=subcategory_vector_list
+                for item in subcategory_vector_list:
+                    subcategory_key_list.append(item['key'])
+                chosen_sub_discussion_list_keys[sub_topic] = subcategory_key_list
             
         title_selftext_vector_list[i]=topic_groups_vectors
+        chosen_discussion_list_keys[i] = chosen_sub_discussion_list_keys
         i = i+1
 
     chosen_discussion_list = dict()
@@ -128,4 +135,4 @@ def results():
             single_topic_summary[sub_topic_name] = final_summary
         all_summaries[key]=single_topic_summary
 
-    return all_summaries
+    return {"summaries":all_summaries,"Keys":chosen_discussion_list_keys}
