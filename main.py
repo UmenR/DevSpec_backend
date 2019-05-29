@@ -53,7 +53,7 @@ default_anchors = '{"performance":["fps","ram","cpu","freeze","crash","gpu"],"gu
 
 Returns: topic coherence score graph, keywords per each topic
 '''
-def analyze(start,end,topics=7,keywords=default_anchors,numDiscussions=2):
+def analyze(start,end,topics=7,keywords=default_anchors,discussions=2):
     #print(keywords)
     keywords = str(keywords)
     keyword_dict=json.loads(keywords,object_pairs_hook=OrderedDict)
@@ -68,7 +68,7 @@ def analyze(start,end,topics=7,keywords=default_anchors,numDiscussions=2):
     globals()['numberOfTopics'] = topics
     globals()['startTime'] = start
     globals()['endTime'] = end
-    globals()['numberOfDiscussions'] = numDiscussions
+    globals()['numberOfDiscussions'] = discussions
     #Note that this is not the start and endtime this is all the data we have scraped
     ldadata = retdata.retriveTMdata(1509494400,1539302400)
     globals()['corexData'] = ldadata
