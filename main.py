@@ -18,6 +18,7 @@ w2w = None
 subreddit = None
 startTime = 0
 endTime = 0
+numberOfDiscussions = 2
 
 '''Select the subreddit for analysis,
 If a subreddit is already existing and has a W2W model trained then we do not need to retrain the W2W Model
@@ -52,7 +53,7 @@ default_anchors = '{"performance":["fps","ram","cpu","freeze","crash","gpu"],"gu
 
 Returns: topic coherence score graph, keywords per each topic
 '''
-def analyze(start,end,topics=7,keywords=default_anchors):
+def analyze(start,end,topics=7,keywords=default_anchors,numDiscussions=2):
     #print(keywords)
     keywords = str(keywords)
     keyword_dict=json.loads(keywords,object_pairs_hook=OrderedDict)
@@ -67,6 +68,7 @@ def analyze(start,end,topics=7,keywords=default_anchors):
     globals()['numberOfTopics'] = topics
     globals()['startTime'] = start
     globals()['endTime'] = end
+    globals()['numberOfDiscussions'] = numDiscussions
     #Note that this is not the start and endtime this is all the data we have scraped
     ldadata = retdata.retriveTMdata(1509494400,1539302400)
     globals()['corexData'] = ldadata
@@ -121,7 +123,7 @@ def results():
         chosen_sub_discussion_list = dict()
         for sub_topic,sub_topic_items in each_topic_item.items():
             chosen_discussions = []
-            chosen_discussions = classifier.getClusterSim(sub_topic_items,key,2,globals()['corexModel'],globals()['w2w'])
+            chosen_discussions = classifier.getClusterSim(sub_topic_items,key,globals()['numberOfDiscussions'],globals()['corexModel'],globals()['w2w'])
             chosen_sub_discussion_list[sub_topic]=chosen_discussions
         chosen_discussion_list[key]=chosen_sub_discussion_list
     all_summaries = dict()
@@ -131,7 +133,7 @@ def results():
             grouped_summaries=classifier.create_title_summaries(listitems,globals()['corexData']['dicts'],key,globals()['corexModel'],globals()['w2w'])
             final_summary = ""
             for discussion_summary in grouped_summaries:
-                final_summary = final_summary + " " + discussion_summary['key'] + " " + discussion_summary['header'] + " " + discussion_summary['content']
+                final_summary = final_summary + " " + discussion_summary['header'] + " " + discussion_summary['content']
             single_topic_summary[sub_topic_name] = final_summary
         all_summaries[key]=single_topic_summary
 

@@ -36,6 +36,10 @@ paths:
           in: query
           type: string
           description: topic and keyword pairs
+        - name: discussions
+          in: query
+          type: integer
+          description: Number of individual discussions included in final summary per each topic
       responses:
         200:
           description: Successful completed the analysis
